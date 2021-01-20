@@ -1,2 +1,3 @@
 # playbook-awx-artifactory-download-and-deploy
-This is a AWX playbook to download from Artifactory and deploy
+This repository is used to download, deploy and test spring boot application via a CD pipeline.
+

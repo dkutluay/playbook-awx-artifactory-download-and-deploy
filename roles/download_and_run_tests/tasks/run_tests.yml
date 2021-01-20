@@ -1,0 +1,49 @@
+---
+- name: Use python3
+  set_fact: ansible_python_interpreter=/usr/bin/python3
+
+#https://hub.docker.com/r/cypress/included/tags?page=1&ordering=last_updated
+- name: "Run cypress tests"
+  shell: "docker run -it --rm --name cypress --network host -v $PWD:/e2e -w /e2e cypress/included:6.2.1"
+  args:
+    chdir: "{{ test_directory }}/{{ git_repository_name }}/src/test/cypress"
+
+- name: "Run gatling tests"
+  shell: "docker run -it --name gatling --network host -v $PWD:/gatling -w /gatling openjdk:8-jdk-alpine ./mvnw gatling:test && docker rm gatling"
+  args:
+    chdir: "{{ test_directory }}/{{ git_repository_name }}"
+
+- name: "Create web directories"
+  file:
+    path: "{{ dirs }}"
+    state: directory
+  with_items:
+    - "{{ test_directory }}/{{ git_repository_name }}/web"
+    - "{{ test_directory }}/{{ git_repository_name }}/web/cypress"
+    - "{{ test_directory }}/{{ git_repository_name }}/web/gatling"
+  loop_control:
+    loop_var: dirs
+
+- name: "Copy cypress results to web directory"
+  copy:
+    src: "{{ test_directory }}/{{ git_repository_name }}/src/test/cypress/cypress/artifacts/"
+    dest: "{{ test_directory }}/{{ git_repository_name }}/web/cypress"
+    remote_src: yes
+
+- name: "Copy gatling results to web directory"
+  shell: "cp -r {{ test_directory }}/{{ git_repository_name }}/src/test/gatling/results/demoapp-*/* {{ test_directory }}/{{ git_repository_name }}/web/gatling"
+
+- name: "Stop any running webresults containers"
+  docker_container:
+    name: webresults
+    state: absent
+
+# https://hub.docker.com/r/halverneus/static-file-server/tags?page=1&ordering=last_updated
+- name: "Serve web results"
+  docker_container:
+    name: webresults
+    image: halverneus/static-file-server:v1.8.2
+    volumes:
+      - "{{ test_directory }}/{{ git_repository_name }}/web:/web:ro"
+    ports:
+      - "8000:8080"
