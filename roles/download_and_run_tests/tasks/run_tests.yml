@@ -4,7 +4,7 @@
 
 #https://hub.docker.com/r/cypress/included/tags?page=1&ordering=last_updated
 - name: "Run cypress tests"
-  shell: "docker run -it --rm --name cypress --network host -v $PWD:/e2e -w /e2e cypress/included:6.2.1"
+  shell: "docker run -it --rm --name cypress --network host -v $PWD:/e2e -w /e2e cypress/included:6.3.0"
   args:
     chdir: "{{ test_directory }}/{{ git_repository_name }}/src/test/cypress"
 
