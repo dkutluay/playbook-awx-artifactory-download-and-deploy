@@ -3,11 +3,11 @@
   set_fact: ansible_python_interpreter=/usr/bin/python3
 
 #https://hub.docker.com/r/cypress/included/tags?page=1&ordering=last_updated
-- name: docker pull cypress/included container
-  docker:
+- name: docker pull cypress/included container image
+  docker_image:
     name: cypress
     image: cypress/included:6.3.0
-    state: present
+    source: pull
  
 - name: "Run cypress tests"
   shell: "docker run -it --rm --name cypress --network host -v $PWD:/e2e -w /e2e cypress/included:6.3.0"
