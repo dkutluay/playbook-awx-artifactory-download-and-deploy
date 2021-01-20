@@ -7,9 +7,10 @@
   docker_image:
     name: cypress/included:6.3.0
     source: pull
- 
+
+# https://github.com/cypress-io/cypress/issues/350
 - name: "Run cypress tests"
-  shell: "docker run -it --rm --name cypress --network host -v $PWD:/e2e -w /e2e cypress/included:6.3.0"
+  shell: "docker run -ipc=host -it --rm --name cypress --network host -v $PWD:/e2e -w /e2e cypress/included:6.3.0"
   args:
     chdir: "{{ test_directory }}/{{ git_repository_name }}/src/test/cypress"
 
