@@ -46,7 +46,7 @@
     dest: "{{ test_directory }}/{{ git_repository_name }}/web/cypress"
     remote_src: yes
 - name: "Run gatling tests"
-  shell: "docker run -it --name gatling --network host -v $PWD:/gatling -w /gatling openjdk:8-jdk-alpine ./mvnw gatling:test && docker rm gatling"
+  shell: "docker run -it --name gatling ---ipc=host -network host -v $PWD:/gatling -w /gatling openjdk:8-jdk-alpine ./mvnw gatling:test && docker rm gatling"
   args:
     chdir: "{{ test_directory }}/{{ git_repository_name }}"
 
