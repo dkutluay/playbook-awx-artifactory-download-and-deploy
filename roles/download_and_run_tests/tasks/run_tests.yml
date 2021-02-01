@@ -39,12 +39,19 @@
   shell: "docker run -it --rm --name cypress --ipc=host --network host -v $PWD:/e2e -w /e2e cypress/included:6.3.0"
   args:
     chdir: "{{ test_directory }}/{{ git_repository_name }}/src/test/cypress"
+  register: cypress_result
+  ignore_errors: True
 
 - name: "Copy cypress results to web directory"
   copy:
     src: "{{ test_directory }}/{{ git_repository_name }}/src/test/cypress/cypress/artifacts/"
     dest: "{{ test_directory }}/{{ git_repository_name }}/web/cypress"
     remote_src: yes
+
+- name: "Check if cypress tests failed"
+  fail:
+    msg: "The cypress test(s) have failed."
+  when: cypress_result.rc == 1
 
 - name: "Run gatling tests"
   shell: "docker run -it --name gatling --ipc=host --network host -v $PWD:/gatling -w /gatling openjdk:8-jdk-alpine ./mvnw gatling:test && docker rm gatling"
