@@ -10,7 +10,7 @@
     state: directory
     mode: 0700
 
-- name: "Git clone cdaas-demo-app project from GitLab"
+- name: "Git clone cdaas-demo-app project from {{ git_access_protocol }}://{{ git_clone_url }}"
   command: "git clone -c http.sslVerify=false {{ git_access_protocol }}://{{ git_clone_url }}"
   args:
     chdir: "{{ test_directory }}"
