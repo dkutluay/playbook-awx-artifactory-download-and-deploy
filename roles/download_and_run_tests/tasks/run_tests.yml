@@ -2,7 +2,11 @@
 - name: Use python3
   set_fact: ansible_python_interpreter=/usr/bin/python3
 
-- name: "Create web directories"
+- name: Print all available facts
+  ansible.builtin.debug:
+    var: ansible_facts
+
+- name: "Create web directories to store the test results"
   file:
     path: "{{ dirs }}"
     state: directory
@@ -19,7 +23,7 @@
     state: absent
 
 # https://hub.docker.com/r/halverneus/static-file-server/tags?page=1&ordering=last_updated
-- name: "Serve web results"
+- name: "Serve web results of testing via http://<host>:8000"
   docker_container:
     name: webresults
     image: halverneus/static-file-server:v1.8.2
@@ -29,20 +33,21 @@
       - "8000:8080"
 
 #https://hub.docker.com/r/cypress/included/tags?page=1&ordering=last_updated
-- name: docker pull cypress/included container image
+- name: "Docker pull cypress/included container image of 2,5 Gigabyte"
   docker_image:
     name: cypress/included:6.3.0
     source: pull
 
 # https://github.com/cypress-io/cypress/issues/350
-- name: "Run cypress tests"
+# Do not fail immediately. Otherwise, the results are not copied in the next task.
+- name: "Run cypress tests and make video recordings"
   shell: "docker run -it --rm --name cypress --ipc=host --network host -v $PWD:/e2e -w /e2e cypress/included:6.3.0"
   args:
     chdir: "{{ test_directory }}/{{ git_repository_name }}/src/test/cypress"
   register: cypress_result
   ignore_errors: True
 
-- name: "Copy cypress results to web directory"
+- name: "Copy cypress results to {{ test_directory }}/{{ git_repository_name }}/web/cypress directory"
   copy:
     src: "{{ test_directory }}/{{ git_repository_name }}/src/test/cypress/cypress/artifacts/"
     dest: "{{ test_directory }}/{{ git_repository_name }}/web/cypress"
@@ -58,6 +63,6 @@
   args:
     chdir: "{{ test_directory }}/{{ git_repository_name }}"
 
-- name: "Copy gatling results to web directory"
+- name: "Copy gatling results to {{ test_directory }}/{{ git_repository_name }}/web/gatling directory"
   shell: "cp -r {{ test_directory }}/{{ git_repository_name }}/src/test/gatling/results/demoapp-*/* {{ test_directory }}/{{ git_repository_name }}/web/gatling"
 
