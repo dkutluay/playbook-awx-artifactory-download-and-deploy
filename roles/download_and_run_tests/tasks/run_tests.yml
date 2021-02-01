@@ -39,8 +39,6 @@
   shell: "docker run -it --rm --name cypress --ipc=host --network host -v $PWD:/e2e -w /e2e cypress/included:6.3.0"
   args:
     chdir: "{{ test_directory }}/{{ git_repository_name }}/src/test/cypress"
-  environment:
-    CYPRESS_VIDEO: false
 
 - name: "Copy cypress results to web directory"
   copy:
