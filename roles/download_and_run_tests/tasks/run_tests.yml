@@ -36,7 +36,7 @@
 
 # https://github.com/cypress-io/cypress/issues/350
 # Do not fail immediately. Otherwise, the results are not copied in the next task.
-- name: "Run cypress tests and make video recordings"
+- name: "Run cypress tests and make video recordings. This may take some time."
   shell: "docker run -it --rm --name cypress --ipc=host --network host -v $PWD:/e2e -w /e2e cypress/included:6.3.0"
   args:
     chdir: "{{ test_directory }}/{{ git_repository_name }}/src/test/cypress"
@@ -49,7 +49,7 @@
     dest: "{{ test_directory }}/{{ git_repository_name }}/web/cypress"
     remote_src: yes
 
-- name: "Check if cypress tests failed"
+- name: "Check if cypress tests failed."
   fail:
     msg: "The cypress test(s) have failed."
   when: cypress_result.rc == 1
