@@ -1,0 +1,12 @@
+---
+- name: Docker container deployment
+  hosts: all
+  gather_facts: yes
+  become: true
+  community.docker.docker_container:
+    name: mydata
+    image: gitlab.example.com:4567/root/cdaas-demo-app:development
+#    volumes:
+#      - /data
+    ports:
+     - "8888:8080"
