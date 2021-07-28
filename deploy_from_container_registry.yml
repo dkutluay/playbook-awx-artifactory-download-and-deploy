@@ -9,7 +9,7 @@
         name: docker
     - name: Docker
       community.docker.docker_container:
-        name: mydata
-        image: gitlab.example.com:4567/root/cdaas-demo-app:development
+        name: "{{ lookup('env', 'appname') }}"
+        image: "{{ lookup('env', 'imagetag') }}"
         ports:
         - "8888:8080"
