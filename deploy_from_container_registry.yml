@@ -9,7 +9,7 @@
         name: docker
     - name: Docker
       community.docker.docker_container:
-        name: "{{ lookup('env', 'appname') }}"
-        image: "{{ lookup('env', 'imagetag') }}"
+        name: "{{ lookup('env', 'ARTIFACT_NAME') }}"
+        image: "{{ lookup('env', 'IMAGE_TAG') }}"
         ports:
         - "8888:8080"
