@@ -1,12 +1,15 @@
 ---
-- name: Docker container deployment
-  hosts: all
+- name: "Docker container deployment playbook"
+  hosts: localhost
   gather_facts: yes
   become: true
-  community.docker.docker_container:
-    name: mydata
-    image: gitlab.example.com:4567/root/cdaas-demo-app:development
-#    volumes:
-#      - /data
-    ports:
-     - "8888:8080"
+  tasks:
+    - name: Install Docker Module for Python
+      pip:
+        name: docker
+    - name: Docker
+      community.docker.docker_container:
+        name: mydata
+        image: gitlab.example.com:4567/root/cdaas-demo-app:development
+        ports:
+        - "8888:8080"
